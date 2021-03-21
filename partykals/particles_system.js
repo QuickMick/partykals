@@ -100,7 +100,7 @@ class ParticlesSystem {
     this.options = options;
 
     // get particle options
-    var poptions = options.particles;
+    const pOptions = options.particles;
 
     // do some internal cheating to replace const size with global size
     if (typeof options.particles.size === "number") {
@@ -121,32 +121,32 @@ class ParticlesSystem {
     }
 
     // set some internal flags
-    options.particles.fade = defined(poptions.startAlpha) || defined(poptions.alpha);
-    options.particles.rotating = defined(poptions.rotationSpeed) || defined(poptions.rotation);
-    options.particles.colorize = defined(poptions.color) || defined(poptions.startColor);
-    options.particles.scaling = defined(poptions.size) || defined(poptions.startSize);
+    options.particles.fade = defined(pOptions.startAlpha) || defined(pOptions.alpha);
+    options.particles.rotating = defined(pOptions.rotationSpeed) || defined(pOptions.rotation);
+    options.particles.colorize = defined(pOptions.color) || defined(pOptions.startColor);
+    options.particles.scaling = defined(pOptions.size) || defined(pOptions.startSize);
 
     // validate alpha params
-    if (defined(poptions.startAlpha) && !defined(poptions.endAlpha)) {
+    if (defined(pOptions.startAlpha) && !defined(pOptions.endAlpha)) {
       throw new Error("When providing 'startAlpha' you must also provide 'endAlpha'!");
     }
-    if (defined(poptions.startAlpha) && defined(poptions.alpha)) {
+    if (defined(pOptions.startAlpha) && defined(pOptions.alpha)) {
       throw new Error("When providing 'alpha' you can't also provide 'startAlpha'!");
     }
 
     // validate color params
-    if (defined(poptions.startColor) && !defined(poptions.endColor)) {
+    if (defined(pOptions.startColor) && !defined(pOptions.endColor)) {
       throw new Error("When providing 'startColor' you must also provide 'endColor'!");
     }
-    if (defined(poptions.startColor) && defined(poptions.color)) {
+    if (defined(pOptions.startColor) && defined(pOptions.color)) {
       throw new Error("When providing 'color' you can't also provide 'startColor'!");
     }
 
     // validate size params
-    if (defined(poptions.startSize) && !defined(poptions.endSize)) {
+    if (defined(pOptions.startSize) && !defined(pOptions.endSize)) {
       throw new Error("When providing 'startSize' you must also provide 'endSize'!");
     }
-    if (defined(poptions.startSize) && defined(poptions.size)) {
+    if (defined(pOptions.startSize) && defined(pOptions.size)) {
       throw new Error("When providing 'size' you can't also provide 'startSize'!");
     }
 
@@ -211,11 +211,11 @@ class ParticlesSystem {
     this._deadParticles = [];
 
     // create all particles + set geometry attributes
-    var vertices = new Float32Array(particleCount * 3);
-    var colors = options.particles.colorize ? new Float32Array(particleCount * 3) : null;
-    var alphas = options.particles.fade ? new Float32Array(particleCount * 1) : null;
-    var sizes = options.particles.scaling ? new Float32Array(particleCount * 1) : null;
-    var rotations = options.particles.rotating ? new Float32Array(particleCount * 1) : null;
+    const vertices = new Float32Array(particleCount * 3);
+    const colors = options.particles.colorize ? new Float32Array(particleCount * 3) : null;
+    const alphas = options.particles.fade ? new Float32Array(particleCount * 1) : null;
+    const sizes = options.particles.scaling ? new Float32Array(particleCount * 1) : null;
+    const rotations = options.particles.rotating ? new Float32Array(particleCount * 1) : null;
     for (let p = 0; p < particleCount; p++) {
       const index = p * 3;
       vertices[index] = vertices[index + 1] = vertices[index + 2] = 0;
@@ -335,7 +335,7 @@ class ParticlesSystem {
    */
   setColor(index, color) {
     index *= 3;
-    var colors = this.particlesGeometry.attributes.color.array;
+    const colors = this.particlesGeometry.attributes.color.array;
     colors[index] = color.r;
     colors[index + 1] = color.g;
     colors[index + 2] = color.b;
@@ -347,7 +347,7 @@ class ParticlesSystem {
    */
   setPosition(index, position) {
     index *= 3;
-    var vertices = this.particlesGeometry.attributes.position.array;
+    const vertices = this.particlesGeometry.attributes.position.array;
     vertices[index] = position.x;
     vertices[index + 1] = position.y;
     vertices[index + 2] = position.z;
@@ -411,7 +411,7 @@ class ParticlesSystem {
   update(deltaTime) {
     // if deltaTime is undefined, set automatically
     if (deltaTime === undefined) {
-      var timeNow = new Date().getTime() / 1000.0;
+      const timeNow = new Date().getTime() / 1000.0;
       deltaTime = timeNow - this._lastTime || 0;
       this._lastTime = timeNow;
     }
@@ -447,9 +447,9 @@ class ParticlesSystem {
     }
 
     // update particles
-    for (var i = this._aliveParticles.length - 1; i >= 0; --i) {
+    for (let i = this._aliveParticles.length - 1; i >= 0; --i) {
       // update particle
-      var particle = this._aliveParticles[i];
+      const particle = this._aliveParticles[i];
       particle.update(i, deltaTime);
 
       // finished? remove it
@@ -520,14 +520,14 @@ class ParticlesSystem {
    */
   spawnParticles(quantity) {
     // spawn particles
-    for (var i = 0; i < quantity; ++i) {
+    for (let i = 0; i < quantity; ++i) {
       // no available dead particles? skip
       if (this._deadParticles.length === 0) {
         return;
       }
 
       // spawn particle
-      var particle = this._deadParticles.pop();
+      const particle = this._deadParticles.pop();
       particle.reset();
       this._aliveParticles.push(particle);
     }

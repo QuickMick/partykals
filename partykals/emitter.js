@@ -4,7 +4,7 @@
  * Since: 2019.
 */
 const Utils = require('./utils');
-var randomizerOrValue = Utils.randomizerOrValue;
+const randomizerOrValue = Utils.randomizerOrValue;
 
 /**
  * Emitter class to determine rate of particles generation.
@@ -33,7 +33,7 @@ class Emitter
     update(deltaTime, system)
     {
         // particles to generate
-        var ret = 0;
+        let ret = 0;
 
         // first update? do burst
         if (this.age === 0 && this.options.onSpawnBurst) {

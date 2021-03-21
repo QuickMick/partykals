@@ -24,7 +24,7 @@ class Particle {
    * Reset the particle.
    */
   reset() {
-    var options = this.system.options.particles;
+    const options = this.system.options.particles;
 
     // reset particle age and if alive
     this.age = 0;
@@ -125,7 +125,7 @@ class Particle {
     }
 
     // is it first update call?
-    var firstUpdate = this.age === 0;
+    const firstUpdate = this.age === 0;
 
     // do first-update stuff
     if (firstUpdate) {
@@ -216,11 +216,11 @@ class Particle {
       this.position.y += this.velocity.y * deltaTime;
       this.position.z += this.velocity.z * deltaTime;
     }
-    var positionToSet = this.position;
+    let positionToSet = this.position;
 
     // to maintain world position
     if (this.startWorldPosition) {
-      var systemPos = this.system.getWorldPosition();
+      const systemPos = this.system.getWorldPosition();
       systemPos.sub(this.startWorldPosition);
       positionToSet = positionToSet.clone().sub(systemPos);
     }
