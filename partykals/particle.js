@@ -6,6 +6,8 @@
 const THREE = require("three");
 const Utils = require("./utils");
 
+const TMP1 = new THREE.Vector3( 0, 0, 0 );
+const TMP2 = new THREE.Vector3( 0, 0, 0 );
 /**
  * A single particle metadata in the particles system.
  * We attach this to the particle's vertices when in system's geometry.
@@ -216,16 +218,18 @@ class Particle {
       this.position.y += this.velocity.y * deltaTime;
       this.position.z += this.velocity.z * deltaTime;
     }
-    let positionToSet = this.position;
+    let positionToSet = TMP1.set(this.position.x,this.position.y,this.position.z);
 
     // to maintain world position
     if (this.startWorldPosition) {
-      const systemPos = this.system.getWorldPosition();
+      const systemPos = this.system.getWorldPosition(TMP2); // returns TMP2
       systemPos.sub(this.startWorldPosition);
-      positionToSet = positionToSet.clone().sub(systemPos);
+      positionToSet = positionToSet.sub(systemPos);
     }
 
     // set position in system
+    // be aware, that positionToSet is a temp-vector at this point,
+    // so do not store it anywhere
     this.system.setPosition(index, positionToSet);
 
     // update velocity
