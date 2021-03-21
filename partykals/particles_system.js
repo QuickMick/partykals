@@ -94,6 +94,11 @@ class ParticlesSystem {
    * @param {Boolean} options.system.depthTest Should we perform depth test? (default to true).
    */
   constructor(options) {
+    // use bindObject, to set these values
+    // then particle system follows the passed object
+    this.boundObject = null;
+    this.lockBoundRotation = true;
+
     // store options
     options.particles = options.particles || { worldPosition: true };
     options.system = options.system || {};
@@ -405,6 +410,11 @@ class ParticlesSystem {
     return false;
   }
 
+  bindObject(object, lockBoundRotation) {
+    this.boundObject = object;
+    this.lockBoundRotation = defined(lockBoundRotation) ? lockBoundRotation : true;
+  }
+
   /**
    * Update particles system.
    */
@@ -432,6 +442,18 @@ class ParticlesSystem {
     // store last delta time
     this.dt = deltaTime;
     this.age += deltaTime;
+
+    // if we shall follow an object,
+    // we just update the position on each frame,
+    // to be the same, as the object
+    if (this.boundObject) {
+      const pos = this.boundObject.position;
+      this.particleSystem.position.set(pos.x, pos.y, pos.z);
+      if (!this.lockBoundRotation) {
+        const rot = this.boundObject.rotation;
+        this.particleSystem.rotation.set(rot.x, rot.y, rot.z);
+      }
+    }
 
     // to check if number of particles changed
     const prevParticlesCount = this._aliveParticles.length;
