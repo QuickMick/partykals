@@ -7,6 +7,11 @@ const THREE = require("three");
 const Particle = require("./particle");
 const ParticlesMaterial = require("./material/material");
 
+const Randomizers = require("./randomizers");
+const Emitter = require("./emitter");
+
+const NULL_ARRAY = [];
+
 const BLENDING_OPTIONS = {
   opaque: THREE.NoBlending,
   additive: THREE.AdditiveBlending,
@@ -17,6 +22,40 @@ const BLENDING_OPTIONS = {
 // to check if value is defined
 function defined(val) {
   return val !== undefined && val !== null;
+}
+
+/**
+ * deep-copies the settings,
+ * and replaces the objects that have a "moduleType"
+ * value with the appropriate class from partykals.
+ * 
+ * a object, that can be replaced must look like
+ * { moduleType:"e.g. ColorsRandomizer", values:[optional parameters]}
+ * 
+ * @param {Object} object 
+ * @param {Object} result target to which everything is copied
+ */
+function copyFromJSON(object, result = {}) {
+  for (let key in object) {
+    const cur = object[key];
+    if (typeof cur !== "object") {
+      result[key] = cur;
+      continue;
+    }
+
+    if (!cur.moduleType) {
+      const nextLevel = (result[key] = {});
+      copyFromJSON(cur[key], nextLevel);
+      continue;
+    }
+
+    // replace all objects with the partykals/three objects
+
+    const C = THREE[cur.moduleType] || Randomizers[cur.moduleType];
+    object[key] = new C(...(cur.values || NULL_ARRAY));
+  }
+
+  return result;
 }
 
 /**
@@ -221,23 +260,19 @@ class ParticlesSystem {
     const alphas = options.particles.fade ? new Float32Array(particleCount * 1) : null;
     const sizes = options.particles.scaling ? new Float32Array(particleCount * 1) : null;
     const rotations = options.particles.rotating ? new Float32Array(particleCount * 1) : null;
+   
     for (let p = 0; p < particleCount; p++) {
       const index = p * 3;
       vertices[index] = vertices[index + 1] = vertices[index + 2] = 0;
-      if (colors) {
-        colors[index] = colors[index + 1] = colors[index + 2] = 1;
-      }
-      if (alphas) {
-        alphas[p] = 1;
-      }
-      if (sizes) {
-        sizes[p] = 1;
-      }
-      if (rotations) {
-        rotations[p] = 0;
-      }
+
+      if (colors) colors[index] = colors[index + 1] = colors[index + 2] = 1;
+      if (alphas) alphas[p] = 1;
+      if (sizes) sizes[p] = 1;
+      if (rotations) rotations[p] = 0;
+
       this._deadParticles.push(new Particle(this));
     }
+
     this.particlesGeometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
     if (alphas) {
       this.particlesGeometry.setAttribute("alpha", new THREE.BufferAttribute(alphas, 1));
@@ -278,6 +313,20 @@ class ParticlesSystem {
     if (options.container) {
       this.addTo(options.container);
     }
+  }
+
+  /**
+   * creates an instance from a json definition
+   *
+   * @static
+   * @param {*} options
+   * @return {ParticlesSystem} new ParticlesSystem created from the json-object
+   * @memberof ParticlesSystem
+   */
+  static fromJSON(options) {
+    const result = copyFromJSON(options, {});
+    result.system.emitter = new Emitter(result.system.emitter);
+    return new ParticlesSystem(result);
   }
 
   /**
