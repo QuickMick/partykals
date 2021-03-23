@@ -15,8 +15,8 @@ export default {
   },{
     file: "./dist/partykals.js",
     format: "iife",
-    sourcemap:  false,
-    name: "partykals",
+    sourcemap:  "inline",
+    name: "Partykals",
     globals:{
         three:"THREE"
     }

@@ -5,6 +5,7 @@ var renderer, scene, camera, parties, stats, moveLeft, moveRight, moveUp, moveDo
 init();
 animate();
 
+
 // init demo
 function init() {
 
@@ -43,6 +44,8 @@ function init() {
     var addDemo = (system, offset) => {
         system.particleSystem.position.x = offset * 125 - 50;
         parties.push(system);
+        system.addTo(scene);
+
     }
 
     // global scale
@@ -54,18 +57,17 @@ function init() {
     var texture = new THREE.TextureLoader().load(window.explosionImage.src);
 
     // demo 1:
-    addDemo(new Partykals.ParticlesSystem({
-        container: scene,
+    addDemo( Partykals.ParticlesSystem.fromJSON({
         particles: {
             globalSize: 5,
             ttl: 12,
-            velocity: new Partykals.Randomizers.SphereRandomizer(12.5),
-            velocityBonus: new THREE.Vector3(0, 25, 0),
+            velocity: {moduleType:"SphereRandomizer",values:[12.5]},
+            velocityBonus:  {moduleType:"Vector3",values:[0, 25, 0]},
             gravity: -10,
             startAlpha: 1,
             endAlpha: 0,
-            startColor: new Partykals.Randomizers.ColorsRandomizer(),
-            endColor: new Partykals.Randomizers.ColorsRandomizer(),
+            startColor: {moduleType:"ColorsRandomizer"},
+            endColor: {moduleType:"ColorsRandomizer"},
             startAlphaChangeAt: 0,
             blending: "blend",
             onUpdate: (particle) => {
@@ -81,17 +83,16 @@ function init() {
         system: {
             particlesCount: 1000,
             scale: globalScale,
-            emitters: new Partykals.Emitter({
-                onInterval: new Partykals.Randomizers.MinMaxRandomizer(0, 5),
-                interval: new Partykals.Randomizers.MinMaxRandomizer(0, 0.25),
-            }),
+            emitters: {
+                onInterval: {moduleType:"MinMaxRandomizer",values:[0, 5]},
+                interval: {moduleType:"MinMaxRandomizer",values:[0, 0.25]},
+            },
             speed: 1.5,
         }
     }), 0);
 
     // demo 2:
     addDemo(new Partykals.ParticlesSystem({
-        container: scene,
         particles: {
             startAlpha: 1,
             endAlpha: 0,
@@ -125,7 +126,6 @@ function init() {
 
     // demo 3:
     addDemo(new Partykals.ParticlesSystem({
-        container: scene,
         particles: {
             startAlpha: 1,
             endAlpha: 0,
@@ -154,7 +154,6 @@ function init() {
    
     // demo 4:
     addDemo(new Partykals.ParticlesSystem({
-        container: scene,
         particles: {
             startAlpha: 1,
             endAlpha: 0,

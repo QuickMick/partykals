@@ -45,14 +45,14 @@ function copyFromJSON(object, result = {}) {
 
     if (!cur.moduleType) {
       const nextLevel = (result[key] = {});
-      copyFromJSON(cur[key], nextLevel);
+      copyFromJSON(object[key], nextLevel);
       continue;
     }
 
     // replace all objects with the partykals/three objects
 
     const C = THREE[cur.moduleType] || Randomizers[cur.moduleType];
-    object[key] = new C(...(cur.values || NULL_ARRAY));
+    result[key] = new C(...(cur.values || NULL_ARRAY));
   }
 
   return result;
@@ -325,7 +325,7 @@ class ParticlesSystem {
    */
   static fromJSON(options) {
     const result = copyFromJSON(options, {});
-    result.system.emitter = new Emitter(result.system.emitter);
+    result.system.emitters = new Emitter(result.system.emitters);
     return new ParticlesSystem(result);
   }
 
