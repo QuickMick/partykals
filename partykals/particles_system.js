@@ -28,34 +28,38 @@ function defined(val) {
  * deep-copies the settings,
  * and replaces the objects that have a "moduleType"
  * value with the appropriate class from partykals.
- * 
+ *
  * a object, that can be replaced must look like
  * { moduleType:"e.g. ColorsRandomizer", values:[optional parameters]}
- * 
- * @param {Object} object 
- * @param {Object} result target to which everything is copied
+ *
+ * @param {Object} object
+ * @returns the copied object
  */
-function copyFromJSON(object, result = {}) {
-  for (let key in object) {
-    const cur = object[key];
-    if (typeof cur !== "object") {
-      result[key] = cur;
-      continue;
-    }
-
-    if (!cur.moduleType) {
-      const nextLevel = (result[key] = {});
-      copyFromJSON(object[key], nextLevel);
-      continue;
-    }
-
-    // replace all objects with the partykals/three objects
-
-    const C = THREE[cur.moduleType] || Randomizers[cur.moduleType];
-    result[key] = new C(...(cur.values || NULL_ARRAY));
+function copyFromJSON(object) {
+  if (typeof object !== "object") {
+    return object;
   }
 
-  return result;
+  if (Array.isArray(object)) {
+    const result = [];
+    for (let i = 0; i < object.length; i++) {
+      result.push(copyFromJSON(object[i]));
+    }
+    return result;
+  }
+
+  // if object, create a new object and
+  // copy all sub values
+  if (!object.moduleType) {
+    const result = {};
+    for (let key in object) {
+      result[key] = copyFromJSON(object[key]);
+    }
+    return result;
+  }
+  // if we need to convert to object
+  const C = THREE[object.moduleType] || Randomizers[object.moduleType];
+  return new C(...(object.values || NULL_ARRAY));
 }
 
 /**
@@ -260,7 +264,7 @@ class ParticlesSystem {
     const alphas = options.particles.fade ? new Float32Array(particleCount * 1) : null;
     const sizes = options.particles.scaling ? new Float32Array(particleCount * 1) : null;
     const rotations = options.particles.rotating ? new Float32Array(particleCount * 1) : null;
-   
+
     for (let p = 0; p < particleCount; p++) {
       const index = p * 3;
       vertices[index] = vertices[index + 1] = vertices[index + 2] = 0;
