@@ -35,7 +35,7 @@ function defined(val) {
  * @param {Object} object
  * @returns the copied object
  */
-function copyFromJSON(object) {
+function copyFromJSON(object,resources) {
   if (typeof object !== "object") {
     return object;
   }
@@ -43,7 +43,7 @@ function copyFromJSON(object) {
   if (Array.isArray(object)) {
     const result = [];
     for (let i = 0; i < object.length; i++) {
-      result.push(copyFromJSON(object[i]));
+      result.push(copyFromJSON(object[i],resources));
     }
     return result;
   }
@@ -53,13 +53,19 @@ function copyFromJSON(object) {
   if (!object.moduleType) {
     const result = {};
     for (let key in object) {
-      result[key] = copyFromJSON(object[key]);
+      result[key] = copyFromJSON(object[key],resources);
     }
     return result;
   }
+
+  if(object.moduleType === "texture"){
+    return resources[object.params[0]];
+  }
+
+
   // if we need to convert to object
   const C = THREE[object.moduleType] || Randomizers[object.moduleType];
-  return new C(...(object.values || NULL_ARRAY));
+  return new C(...(object.params || NULL_ARRAY));
 }
 
 /**
@@ -327,8 +333,8 @@ class ParticlesSystem {
    * @return {ParticlesSystem} new ParticlesSystem created from the json-object
    * @memberof ParticlesSystem
    */
-  static fromJSON(options) {
-    const result = copyFromJSON(options, {});
+  static fromJSON(options,resources = {}) {
+    const result = copyFromJSON(options, resources);
     result.system.emitters = new Emitter(result.system.emitters);
     return new ParticlesSystem(result);
   }

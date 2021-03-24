@@ -61,8 +61,8 @@ function init() {
         particles: {
             globalSize: 5,
             ttl: 12,
-            velocity: {moduleType:"SphereRandomizer",values:[12.5]},
-            velocityBonus:  {moduleType:"Vector3",values:[0, 25, 0]},
+            velocity: {moduleType:"SphereRandomizer",params:[12.5]},
+            velocityBonus:  {moduleType:"Vector3",params:[0, 25, 0]},
             gravity: -10,
             startAlpha: 1,
             endAlpha: 0,
@@ -84,8 +84,8 @@ function init() {
             particlesCount: 1000,
             scale: globalScale,
             emitters: {
-                onInterval: {moduleType:"MinMaxRandomizer",values:[0, 5]},
-                interval: {moduleType:"MinMaxRandomizer",values:[0, 0.25]},
+                onInterval: {moduleType:"MinMaxRandomizer",params:[0, 5]},
+                interval: {moduleType:"MinMaxRandomizer",params:[0, 0.25]},
             },
             speed: 1.5,
         }
