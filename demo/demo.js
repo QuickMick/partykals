@@ -83,10 +83,10 @@ function init() {
         system: {
             particlesCount: 1000,
             scale: globalScale,
-            emitters: {
+            emitters: [{
                 onInterval: {moduleType:"MinMaxRandomizer",params:[0, 5]},
                 interval: {moduleType:"MinMaxRandomizer",params:[0, 0.25]},
-            },
+            }],
             speed: 1.5,
         }
     }), 0);

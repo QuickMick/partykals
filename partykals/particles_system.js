@@ -338,7 +338,11 @@ class ParticlesSystem {
    */
   static fromJSON(options,resources = {}) {
     const result = copyFromJSON(options, resources);
-    result.system.emitters = new Emitter(result.system.emitters);
+    if(Array.isArray(result.system.emitters)){
+      result.system.emitters = result.system.emitters.map(v=>new Emitter(v));
+    }else{
+      result.system.emitters = new Emitter(result.system.emitters);
+    }
     return new ParticlesSystem(result);
   }
 

@@ -380,7 +380,8 @@ function defined(val){return val!==undefined&&val!==null;}/**
  *
  * @param {Object} object
  * @returns the copied object
- */function copyFromJSON(object,resources){if(_typeof(object)!=="object"){return object;}if(Array.isArray(object)){var result=[];for(var i=0;i<object.length;i++){result.push(copyFromJSON(object[i],resources));}return result;}// if object, create a new object and
+ */function copyFromJSON(object,resources){if(!object)return object;// can either be 0, undefined, null, "" -> we do not care anyways
+if(_typeof(object)!=="object"){return object;}if(Array.isArray(object)){var result=[];for(var i=0;i<object.length;i++){result.push(copyFromJSON(object[i],resources));}return result;}// if object, create a new object and
 // copy all sub values
 if(!object.moduleType){var _result={};for(var key in object){_result[key]=copyFromJSON(object[key],resources);}return _result;}if(object.moduleType==="texture"){return resources[object.params[0]];}// if we need to convert to object
 var C=THREE__default['default'][object.moduleType]||randomizers[object.moduleType];return _construct(C,_toConsumableArray(object.params||NULL_ARRAY));}/**
@@ -554,7 +555,7 @@ for(var i=0;i<quantity;++i){// no available dead particles? skip
 if(this._deadParticles.length===0){return;}// spawn particle
 var particle=this._deadParticles.pop();particle.reset();this._aliveParticles.push(particle);}}/**
    * Remove particles system from its parent.
-   */},{key:"removeSelf",value:function removeSelf(){if(this.particleSystem.parent){this.particleSystem.parent.remove(this.particleSystem);}}}],[{key:"fromJSON",value:function fromJSON(options){var resources=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var result=copyFromJSON(options,resources);result.system.emitters=new emitter(result.system.emitters);return new ParticlesSystem(result);}}]);return ParticlesSystem;}();// override this to set default rendering order to all particle systems
+   */},{key:"removeSelf",value:function removeSelf(){if(this.particleSystem.parent){this.particleSystem.parent.remove(this.particleSystem);}}}],[{key:"fromJSON",value:function fromJSON(options){var resources=arguments.length>1&&arguments[1]!==undefined?arguments[1]:{};var result=copyFromJSON(options,resources);if(Array.isArray(result.system.emitters)){result.system.emitters=result.system.emitters.map(function(v){return new emitter(v);});}else {result.system.emitters=new emitter(result.system.emitters);}return new ParticlesSystem(result);}}]);return ParticlesSystem;}();// override this to set default rendering order to all particle systems
 ParticlesSystem.defaultRenderOrder=undefined;// export the particles system
 var particles_system=ParticlesSystem;
 
