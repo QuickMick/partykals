@@ -36,6 +36,9 @@ function defined(val) {
  * @returns the copied object
  */
 function copyFromJSON(object,resources) {
+
+  if(!object)return object; // can either be 0, undefined, null, "" -> we do not care anyways
+
   if (typeof object !== "object") {
     return object;
   }
