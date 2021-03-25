@@ -6,8 +6,11 @@
 const THREE = require("three");
 const Utils = require("./utils");
 
-const TMP1 = new THREE.Vector3( 0, 0, 0 );
-const TMP2 = new THREE.Vector3( 0, 0, 0 );
+const TMP1 = new THREE.Vector3(0, 0, 0);
+const TMP2 = new THREE.Vector3(0, 0, 0);
+
+const TMP_COLOR = new THREE.Color(1, 1, 1);
+
 /**
  * A single particle metadata in the particles system.
  * We attach this to the particle's vertices when in system's geometry.
@@ -19,6 +22,26 @@ class Particle {
    */
   constructor(system) {
     this.system = system;
+    /*  this.velocity = null;
+    this.acceleration = null; // optional
+    this.position = null;
+    this.startColor = null;
+    this.endColor = null;
+    this.gravityX = 0;
+    this.gravityY = 0;
+    this.gravityZ = 0;
+    this.age = 0;
+    this.finished = false;
+    this.ttl = null;
+    this.alpha = null;
+    this.startAlpha = null;
+    this.endAlpha = null;
+    this.startAlphaChangeAt = null;
+    this.startColorChangeAt = null;
+    this.startSizeChangeAt = null;
+    this.startWorldPosition = null;
+    this.onUpdate = null;*/
+
     this.reset();
   }
 
@@ -33,19 +56,22 @@ class Particle {
     this.finished = false;
 
     // store gravity force
-    this.gravity = options.gravity;
+    this.gravityX = options.gravityX;
+    this.gravityY = options.gravityY || options.gravity;
+    this.gravityZ = options.gravityZ;
 
     // particle's velocity and velocity bonus
-    this.velocity = getConstOrRandomVector(options.velocity);
+    this.velocity = getConstOrRandomVector(this.velocity, options.velocity);
+
     if (options.velocityBonus) {
       this.velocity.add(options.velocityBonus);
     }
 
     // particle's acceleration.
-    this.acceleration = getConstOrRandomVector(options.acceleration, true);
+    this.acceleration = getConstOrRandomVector(this.acceleration, options.acceleration, true);
 
     // starting offset
-    this.position = getConstOrRandomVector(options.offset);
+    this.position = getConstOrRandomVector(this.position, options.offset);
 
     // set particle's ttl
     this.ttl = Utils.getRandomWithSpread(options.ttl || 1, options.ttlExtra) || 1;
@@ -72,12 +98,12 @@ class Particle {
     if (this.colorize) {
       // const color throughout particle's life?
       if (options.color) {
-        this.color = getConstOrRandomColor(options.color);
+        this.color = getConstOrRandomColor(this.color, options.color);
       }
       // shifting color?
       else {
-        this.startColor = getConstOrRandomColor(options.startColor);
-        this.endColor = getConstOrRandomColor(options.endColor);
+        this.startColor = getConstOrRandomColor(this.startColor, options.startColor);
+        this.endColor = getConstOrRandomColor(this.endColor, options.endColor);
       }
     }
 
@@ -167,7 +193,8 @@ class Particle {
             this.endColor,
             this.startColorChangeAt
               ? (this.age - this.startColorChangeAt) / (1 - this.startColorChangeAt)
-              : this.age
+              : this.age,
+            TMP_COLOR
           )
         );
       }
@@ -201,11 +228,6 @@ class Particle {
       }
     }
 
-    // add gravity force
-    if (this.gravity && this.velocity) {
-      this.velocity.y += this.gravity * deltaTime;
-    }
-
     // set animated rotation
     if (this.rotationSpeed) {
       this.rotation += this.rotationSpeed * deltaTime;
@@ -214,11 +236,16 @@ class Particle {
 
     // update position
     if (this.velocity) {
+      // add gravity force
+      if (this.gravityX) this.velocity.x += this.gravityX * deltaTime;
+      if (this.gravityY) this.velocity.y += this.gravityY * deltaTime;
+      if (this.gravityZ) this.velocity.z += this.gravityZ * deltaTime;
+
       this.position.x += this.velocity.x * deltaTime;
       this.position.y += this.velocity.y * deltaTime;
       this.position.z += this.velocity.z * deltaTime;
     }
-    let positionToSet = TMP1.set(this.position.x,this.position.y,this.position.z);
+    let positionToSet = TMP1.set(this.position.x, this.position.y, this.position.z);
 
     // to maintain world position
     if (this.startWorldPosition) {
@@ -265,19 +292,21 @@ class Particle {
 /**
  * Return either the value of a randomizer, a const value, or a default empty or null.
  */
-function getConstOrRandomVector(constValOrRandomizer, returnNullIfUndefined) {
-  if (!constValOrRandomizer) return returnNullIfUndefined ? null : new THREE.Vector3();
-  if (constValOrRandomizer.generate) return constValOrRandomizer.generate();
-  return constValOrRandomizer.clone();
+function getConstOrRandomVector(target, constValOrRandomizer, returnNullIfUndefined) {
+  target = target || new THREE.Vector3();
+  if (!constValOrRandomizer) return returnNullIfUndefined ? null : target.set(0, 0, 0);
+  if (constValOrRandomizer.generate) return constValOrRandomizer.generate(target);
+  return target.copy(constValOrRandomizer);
 }
 
 /**
  * Return either the value of a randomizer, a const value, or a default empty or null.
  */
-function getConstOrRandomColor(constValOrRandomizer, returnNullIfUndefined) {
-  if (!constValOrRandomizer) return returnNullIfUndefined ? null : new THREE.Color(1, 1, 1);
-  if (constValOrRandomizer.generate) return constValOrRandomizer.generate();
-  return constValOrRandomizer.clone();
+function getConstOrRandomColor(target, constValOrRandomizer, returnNullIfUndefined) {
+  target = target || new THREE.Color();
+  if (!constValOrRandomizer) return returnNullIfUndefined ? null : target.setRGB(1, 1, 1);
+  if (constValOrRandomizer.generate) return constValOrRandomizer.generate(target);
+  return target.copy(constValOrRandomizer);
 }
 
 module.exports = Particle;

@@ -174,46 +174,74 @@ function _nonIterableSpread() {
 }
 
 var utils={/**
-     * Returns a random number between min (inclusive) and max (exclusive)
-     */getRandomBetween:function getRandomBetween(min,max){return Math.random()*(max-min)+min;},/**
-     * Get random between baseVal and baseVal + extraRandom.
-     * If 'extraRandom' is not defined, will just return baseVal.
-     * If baseVal is not defined, will return white.
-     */getRandomWithSpread:function getRandomWithSpread(baseVal,extraRandom){if(!extraRandom){return baseVal;}return this.getRandomBetween(baseVal,baseVal+extraRandom);},/**
-     * Get random between two colors.
-     * If 'colMax' is not defined, will just return colMin or white color if not defined.
-     */getRandomColorBetween:function getRandomColorBetween(colMin,colMax){if(!colMax){return colMin?colMin.clone():new THREE__default['default'].Color();}return new THREE__default['default'].Color(this.getRandomBetween(colMin.r,colMax.r),this.getRandomBetween(colMin.g,colMax.g),this.getRandomBetween(colMin.b,colMax.b));},/**
-     * Get random between two vectors.
-     * If 'vecMax' is not defined, will just return vecMin or zero point if not defined.
-     */getRandomVectorBetween:function getRandomVectorBetween(vecMin,vecMax){if(!vecMax){return vecMin?vecMin.clone():new THREE__default['default'].Vector3();}return new THREE__default['default'].Vector3(this.getRandomBetween(vecMin.x,vecMax.x),this.getRandomBetween(vecMin.y,vecMax.y),this.getRandomBetween(vecMin.z,vecMax.z));},/**
-     * Lerp between two colors, returning a new color without changing any of them.
-     */lerpColors:function lerpColors(colA,colB,alpha){return colA.clone().lerp(colB,alpha);},/**
-     * Lerp between two numbers.
-     */lerp:function lerp(x,y,alpha){return x*(1-alpha)+y*alpha;},/**
-     * Get const numeric value or generate random value from randomizer.
-     */randomizerOrValue:function randomizerOrValue(val){return (val.generate?val.generate():val)||0;}};
+   * Returns a random number between min (inclusive) and max (exclusive)
+   */getRandomBetween:function getRandomBetween(min,max){return Math.random()*(max-min)+min;},/**
+   * Get random between baseVal and baseVal + extraRandom.
+   * If 'extraRandom' is not defined, will just return baseVal.
+   * If baseVal is not defined, will return white.
+   */getRandomWithSpread:function getRandomWithSpread(baseVal,extraRandom){if(!extraRandom){return baseVal;}return this.getRandomBetween(baseVal,baseVal+extraRandom);},/**
+   * Get random between two colors.
+   * If 'colMax' is not defined, will just return colMin or white color if not defined.
+   */getRandomColorBetween:function getRandomColorBetween(colMin,colMax,target){target=target||new THREE__default['default'].Color();if(!colMax){return colMin?target.copy(colMin):target.setRGB(0,0,0);}return target.setRGB(this.getRandomBetween(colMin.r,colMax.r),this.getRandomBetween(colMin.g,colMax.g),this.getRandomBetween(colMin.b,colMax.b));},// getRandomColorBetween: function (colMin, colMax) {
+//   if (!colMax) {
+//     return colMin ? colMin.clone() : new THREE.Color();
+//   }
+//   return new THREE.Color(
+//     this.getRandomBetween(colMin.r, colMax.r),
+//     this.getRandomBetween(colMin.g, colMax.g),
+//     this.getRandomBetween(colMin.b, colMax.b)
+//   );
+// },
+/**
+   * Get random between two vectors.
+   * If 'vecMax' is not defined, will just return vecMin or zero point if not defined.
+   */getRandomVectorBetween:function getRandomVectorBetween(vecMin,vecMax,target){target=null;target=target||new THREE__default['default'].Vector3();if(!vecMax){return vecMin?target.copy(vecMin):target.set(0,0,0);}return target.set(this.getRandomBetween(vecMin.x,vecMax.x),this.getRandomBetween(vecMin.y,vecMax.y),this.getRandomBetween(vecMin.z,vecMax.z));},/**
+   * Lerp between two colors, returning a new color without changing any of them.
+   */lerpColors:function lerpColors(colA,colB,alpha,target){target=target||new THREE__default['default'].Color();return target.copy(colA).lerp(colB,alpha);},/**
+   * Lerp between two numbers.
+   */lerp:function lerp(x,y,alpha){return x*(1-alpha)+y*alpha;},/**
+   * Get const numeric value or generate random value from randomizer.
+   */randomizerOrValue:function randomizerOrValue(val){return (val.generate?val.generate():val)||0;}};
 
-var TMP1=new THREE__default['default'].Vector3(0,0,0);var TMP2=new THREE__default['default'].Vector3(0,0,0);/**
+var TMP1=new THREE__default['default'].Vector3(0,0,0);var TMP2=new THREE__default['default'].Vector3(0,0,0);var TMP_COLOR=new THREE__default['default'].Color(1,1,1);/**
  * A single particle metadata in the particles system.
  * We attach this to the particle's vertices when in system's geometry.
  */var Particle=/*#__PURE__*/function(){/**
    * Create the particle.
    * @param {ParticlesSystem} system The particles system this particle belongs to.
-   */function Particle(system){_classCallCheck(this,Particle);this.system=system;this.reset();}/**
+   */function Particle(system){_classCallCheck(this,Particle);this.system=system;/*  this.velocity = null;
+    this.acceleration = null; // optional
+    this.position = null;
+    this.startColor = null;
+    this.endColor = null;
+    this.gravityX = 0;
+    this.gravityY = 0;
+    this.gravityZ = 0;
+    this.age = 0;
+    this.finished = false;
+    this.ttl = null;
+    this.alpha = null;
+    this.startAlpha = null;
+    this.endAlpha = null;
+    this.startAlphaChangeAt = null;
+    this.startColorChangeAt = null;
+    this.startSizeChangeAt = null;
+    this.startWorldPosition = null;
+    this.onUpdate = null;*/this.reset();}/**
    * Reset the particle.
    */_createClass(Particle,[{key:"reset",value:function reset(){var options=this.system.options.particles;// reset particle age and if alive
 this.age=0;this.finished=false;// store gravity force
-this.gravity=options.gravity;// particle's velocity and velocity bonus
-this.velocity=getConstOrRandomVector(options.velocity);if(options.velocityBonus){this.velocity.add(options.velocityBonus);}// particle's acceleration.
-this.acceleration=getConstOrRandomVector(options.acceleration,true);// starting offset
-this.position=getConstOrRandomVector(options.offset);// set particle's ttl
+this.gravityX=options.gravityX;this.gravityY=options.gravityY||options.gravity;this.gravityZ=options.gravityZ;// particle's velocity and velocity bonus
+this.velocity=getConstOrRandomVector(this.velocity,options.velocity);if(options.velocityBonus){this.velocity.add(options.velocityBonus);}// particle's acceleration.
+this.acceleration=getConstOrRandomVector(this.acceleration,options.acceleration,true);// starting offset
+this.position=getConstOrRandomVector(this.position,options.offset);// set particle's ttl
 this.ttl=utils.getRandomWithSpread(options.ttl||1,options.ttlExtra)||1;// set per-particle alpha
 this.alpha=this.startAlpha=this.endAlpha=null;this.startAlphaChangeAt=(options.startAlphaChangeAt||0)/this.ttl;if(options.fade){// const alpha throughout particle's life?
 if(options.alpha!==undefined){this.alpha=utils.randomizerOrValue(options.alpha);}// shifting alpha?
 else {this.startAlpha=utils.randomizerOrValue(options.startAlpha);this.endAlpha=utils.randomizerOrValue(options.endAlpha);}}// set per-particle coloring
 this.colorize=Boolean(options.colorize);this.color=this.startColor=this.endColor=null;this.startColorChangeAt=(options.startColorChangeAt||0)/this.ttl;if(this.colorize){// const color throughout particle's life?
-if(options.color){this.color=getConstOrRandomColor(options.color);}// shifting color?
-else {this.startColor=getConstOrRandomColor(options.startColor);this.endColor=getConstOrRandomColor(options.endColor);}}// set per-particle size
+if(options.color){this.color=getConstOrRandomColor(this.color,options.color);}// shifting color?
+else {this.startColor=getConstOrRandomColor(this.startColor,options.startColor);this.endColor=getConstOrRandomColor(this.endColor,options.endColor);}}// set per-particle size
 this.size=this.startSize=this.endSize=null;this.startSizeChangeAt=(options.startSizeChangeAt||0)/this.ttl;if(options.scaling){// const size throughout particle's life?
 if(options.size!==undefined){this.size=utils.randomizerOrValue(options.size);}// shifting size?
 else {this.startSize=utils.randomizerOrValue(options.startSize);this.endSize=utils.randomizerOrValue(options.endSize);}}// set per-particle rotation
@@ -234,12 +262,12 @@ if(this.color!==null||this.startColor!==null){this.system.setColor(index,this.co
 if(this.size!==null||this.startSize!==null){this.system.setSize(index,this.size||this.startSize);}// set start rotation
 if(this.rotation!==null){this.system.setRotation(index,this.rotation);}}// do normal updates
 else {// set animated color
-if(this.startColor&&this.age>=this.startColorChangeAt){this.system.setColor(index,utils.lerpColors(this.startColor,this.endColor,this.startColorChangeAt?(this.age-this.startColorChangeAt)/(1-this.startColorChangeAt):this.age));}// set animated alpha
+if(this.startColor&&this.age>=this.startColorChangeAt){this.system.setColor(index,utils.lerpColors(this.startColor,this.endColor,this.startColorChangeAt?(this.age-this.startColorChangeAt)/(1-this.startColorChangeAt):this.age,TMP_COLOR));}// set animated alpha
 if(this.startAlpha!=null&&this.age>=this.startAlphaChangeAt){this.system.setAlpha(index,utils.lerp(this.startAlpha,this.endAlpha,this.startAlphaChangeAt?(this.age-this.startAlphaChangeAt)/(1-this.startAlphaChangeAt):this.age));}// set animated size
-if(this.startSize!=null&&this.age>=this.startSizeChangeAt){this.system.setSize(index,utils.lerp(this.startSize,this.endSize,this.startSizeChangeAt?(this.age-this.startSizeChangeAt)/(1-this.startSizeChangeAt):this.age));}}// add gravity force
-if(this.gravity&&this.velocity){this.velocity.y+=this.gravity*deltaTime;}// set animated rotation
+if(this.startSize!=null&&this.age>=this.startSizeChangeAt){this.system.setSize(index,utils.lerp(this.startSize,this.endSize,this.startSizeChangeAt?(this.age-this.startSizeChangeAt)/(1-this.startSizeChangeAt):this.age));}}// set animated rotation
 if(this.rotationSpeed){this.rotation+=this.rotationSpeed*deltaTime;this.system.setRotation(index,this.rotation);}// update position
-if(this.velocity){this.position.x+=this.velocity.x*deltaTime;this.position.y+=this.velocity.y*deltaTime;this.position.z+=this.velocity.z*deltaTime;}var positionToSet=TMP1.set(this.position.x,this.position.y,this.position.z);// to maintain world position
+if(this.velocity){// add gravity force
+if(this.gravityX)this.velocity.x+=this.gravityX*deltaTime;if(this.gravityY)this.velocity.y+=this.gravityY*deltaTime;if(this.gravityZ)this.velocity.z+=this.gravityZ*deltaTime;this.position.x+=this.velocity.x*deltaTime;this.position.y+=this.velocity.y*deltaTime;this.position.z+=this.velocity.z*deltaTime;}var positionToSet=TMP1.set(this.position.x,this.position.y,this.position.z);// to maintain world position
 if(this.startWorldPosition){var systemPos=this.system.getWorldPosition(TMP2);// returns TMP2
 systemPos.sub(this.startWorldPosition);positionToSet=positionToSet.sub(systemPos);}// set position in system
 // be aware, that positionToSet is a temp-vector at this point,
@@ -252,9 +280,9 @@ if(this.age>1){this.age=1;this.finished=true;}}/**
    * Get particle's world position.
    */},{key:"worldPosition",get:function get(){return this.system.getWorldPosition().add(this.position);}}]);return Particle;}();/**
  * Return either the value of a randomizer, a const value, or a default empty or null.
- */function getConstOrRandomVector(constValOrRandomizer,returnNullIfUndefined){if(!constValOrRandomizer)return returnNullIfUndefined?null:new THREE__default['default'].Vector3();if(constValOrRandomizer.generate)return constValOrRandomizer.generate();return constValOrRandomizer.clone();}/**
+ */function getConstOrRandomVector(target,constValOrRandomizer,returnNullIfUndefined){target=target||new THREE__default['default'].Vector3();if(!constValOrRandomizer)return returnNullIfUndefined?null:target.set(0,0,0);if(constValOrRandomizer.generate)return constValOrRandomizer.generate(target);return target.copy(constValOrRandomizer);}/**
  * Return either the value of a randomizer, a const value, or a default empty or null.
- */function getConstOrRandomColor(constValOrRandomizer,returnNullIfUndefined){if(!constValOrRandomizer)return returnNullIfUndefined?null:new THREE__default['default'].Color(1,1,1);if(constValOrRandomizer.generate)return constValOrRandomizer.generate();return constValOrRandomizer.clone();}var particle=Particle;
+ */function getConstOrRandomColor(target,constValOrRandomizer,returnNullIfUndefined){target=target||new THREE__default['default'].Color();if(!constValOrRandomizer)return returnNullIfUndefined?null:target.setRGB(1,1,1);if(constValOrRandomizer.generate)return constValOrRandomizer.generate(target);return target.copy(constValOrRandomizer);}var particle=Particle;
 
 /**
  * Implement vertex shader for our particles.
@@ -298,52 +326,53 @@ var shaderMaterial=new THREE__default['default'].ShaderMaterial({uniforms:unifor
  * Define interface for a helper class to generate random vectors and colors.
  * Author: Ronen Ness.
  * Since: 2019.
-*/ /**
+ */ /**
  * Base class for all vector randomizers.
  */var Randomizer=/*#__PURE__*/function(){function Randomizer(){_classCallCheck(this,Randomizer);}_createClass(Randomizer,[{key:"generate",value:/**
-     * Generate and return a random value.
-     * This is the main method to implement.
-     */function generate(){throw new Error("Not implemented.");}}]);return Randomizer;}();// export the base class
+   * Generate and return a random value.
+   * This is the main method to implement.
+   */function generate(){throw new Error("Not implemented.");}}]);return Randomizer;}();// export the base class
 var randomizer=Randomizer;
 
 /**
  * Box vector randomizer.
  */var BoxRandomizer=/*#__PURE__*/function(_Randomizer){_inherits(BoxRandomizer,_Randomizer);var _super=_createSuper(BoxRandomizer);/**
-     * Create the box randomizer from min and max vectors to randomize between.
-     */function BoxRandomizer(min,max){var _this;_classCallCheck(this,BoxRandomizer);_this=_super.call(this);_this.min=min||new THREE__default['default'].Vector3(-1,-1,-1);_this.max=max||new THREE__default['default'].Vector3(1,1,1);return _this;}/**
-     * Generate a random vector.
-     */_createClass(BoxRandomizer,[{key:"generate",value:function generate(){return utils.getRandomVectorBetween(this.min,this.max);}}]);return BoxRandomizer;}(randomizer);// export the randomizer class
+   * Create the box randomizer from min and max vectors to randomize between.
+   */function BoxRandomizer(min,max){var _this;_classCallCheck(this,BoxRandomizer);_this=_super.call(this);_this.min=min||new THREE__default['default'].Vector3(-1,-1,-1);_this.max=max||new THREE__default['default'].Vector3(1,1,1);return _this;}/**
+   * Generate a random vector.
+   */_createClass(BoxRandomizer,[{key:"generate",value:function generate(target){return utils.getRandomVectorBetween(this.min,this.max,target);}}]);return BoxRandomizer;}(randomizer);// export the randomizer class
 var box_randomizer=BoxRandomizer;
 
+var MIN_VEC=new THREE__default['default'].Vector3(-1,-1,-1);var MAX_VEC=new THREE__default['default'].Vector3(1,1,1);// random between -1 and 1.
 function randMinusToOne(){return Math.random()*2-1;}/**
  * Sphere vector randomizer.
  */var SphereRandomizer=/*#__PURE__*/function(_Randomizer){_inherits(SphereRandomizer,_Randomizer);var _super=_createSuper(SphereRandomizer);/**
-     * Create the sphere randomizer from radius and optional scaler.
-     */function SphereRandomizer(maxRadius,minRadius,scaler,minVector,maxVector){var _this;_classCallCheck(this,SphereRandomizer);_this=_super.call(this);_this.maxRadius=maxRadius||1;_this.minRadius=minRadius||0;_this.scaler=scaler;_this.minVector=minVector;_this.maxVector=maxVector;return _this;}/**
-     * Generate a random vector.
-     */_createClass(SphereRandomizer,[{key:"generate",value:function generate(){// create random vector
-var ret=new THREE__default['default'].Vector3(randMinusToOne(),randMinusToOne(),randMinusToOne());// clamp values
-if(this.minVector||this.maxVector){ret.clamp(this.minVector||new THREE__default['default'].Vector3(-1,-1,-1),this.maxVector||new THREE__default['default'].Vector3(1,1,1));}// normalize and multiply by radius
-ret.normalize().multiplyScalar(utils.getRandomBetween(this.minRadius,this.maxRadius));// apply scaler
-if(this.scaler){ret.multiply(this.scaler);}return ret;}}]);return SphereRandomizer;}(randomizer);// export the randomizer class
+   * Create the sphere randomizer from radius and optional scaler.
+   */function SphereRandomizer(maxRadius,minRadius,scaler,minVector,maxVector){var _this;_classCallCheck(this,SphereRandomizer);_this=_super.call(this);_this.maxRadius=maxRadius||1;_this.minRadius=minRadius||0;_this.scaler=scaler;_this.minVector=minVector;_this.maxVector=maxVector;return _this;}/**
+   * Generate a random vector.
+   */_createClass(SphereRandomizer,[{key:"generate",value:function generate(target){target=target||new THREE__default['default'].Vector3();// create random vector
+target.set(randMinusToOne(),randMinusToOne(),randMinusToOne());// clamp values
+if(this.minVector||this.maxVector){target.clamp(this.minVector||MIN_VEC,this.maxVector||MAX_VEC);}// normalize and multiply by radius
+target.normalize().multiplyScalar(utils.getRandomBetween(this.minRadius,this.maxRadius));// apply scaler
+if(this.scaler){target.multiply(this.scaler);}return target;}}]);return SphereRandomizer;}(randomizer);// export the randomizer class
 var sphere_randomizer=SphereRandomizer;
 
 /**
  * Box vector randomizer.
  */var ColorsRandomizer=/*#__PURE__*/function(_Randomizer){_inherits(ColorsRandomizer,_Randomizer);var _super=_createSuper(ColorsRandomizer);/**
-     * Create the box randomizer from min and max colors to randomize between.
-     */function ColorsRandomizer(min,max){var _this;_classCallCheck(this,ColorsRandomizer);_this=_super.call(this);_this.min=min||new THREE__default['default'].Color(0,0,0);_this.max=max||new THREE__default['default'].Color(1,1,1);return _this;}/**
-     * Generate a random color.
-     */_createClass(ColorsRandomizer,[{key:"generate",value:function generate(){return utils.getRandomColorBetween(this.min,this.max);}}]);return ColorsRandomizer;}(randomizer);// export the randomizer class
+   * Create the box randomizer from min and max colors to randomize between.
+   */function ColorsRandomizer(min,max){var _this;_classCallCheck(this,ColorsRandomizer);_this=_super.call(this);_this.min=min||new THREE__default['default'].Color(0,0,0);_this.max=max||new THREE__default['default'].Color(1,1,1);return _this;}/**
+   * Generate a random color.
+   */_createClass(ColorsRandomizer,[{key:"generate",value:function generate(target){return utils.getRandomColorBetween(this.min,this.max,target);}}]);return ColorsRandomizer;}(randomizer);// export the randomizer class
 var colors_randomizer=ColorsRandomizer;
 
 /**
  * Min-Max number randomizer.
  */var MinMaxRandomizer=/*#__PURE__*/function(_Randomizer){_inherits(MinMaxRandomizer,_Randomizer);var _super=_createSuper(MinMaxRandomizer);/**
-     * Create the min-max randomizer from min and max.
-     */function MinMaxRandomizer(min,max){var _this;_classCallCheck(this,MinMaxRandomizer);_this=_super.call(this);_this.min=min;_this.max=max;return _this;}/**
-     * Generate a random number.
-     */_createClass(MinMaxRandomizer,[{key:"generate",value:function generate(){return utils.getRandomBetween(this.min,this.max);}}]);return MinMaxRandomizer;}(randomizer);// export the randomizer class
+   * Create the min-max randomizer from min and max.
+   */function MinMaxRandomizer(min,max){var _this;_classCallCheck(this,MinMaxRandomizer);_this=_super.call(this);_this.min=min;_this.max=max;return _this;}/**
+   * Generate a random number.
+   */_createClass(MinMaxRandomizer,[{key:"generate",value:function generate(){return utils.getRandomBetween(this.min,this.max);}}]);return MinMaxRandomizer;}(randomizer);// export the randomizer class
 var minmax_randomizer=MinMaxRandomizer;
 
 var randomizers={Randomizer:randomizer,BoxRandomizer:box_randomizer,SphereRandomizer:sphere_randomizer,ColorsRandomizer:colors_randomizer,MinMaxRandomizer:minmax_randomizer};
