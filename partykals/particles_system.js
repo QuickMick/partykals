@@ -35,9 +35,8 @@ function defined(val) {
  * @param {Object} object
  * @returns the copied object
  */
-function copyFromJSON(object,resources) {
-
-  if(!object)return object; // can either be 0, undefined, null, "" -> we do not care anyways
+function copyFromJSON(object, resources) {
+  if (!object) return object; // can either be 0, undefined, null, "" -> we do not care anyways
 
   if (typeof object !== "object") {
     return object;
@@ -46,7 +45,7 @@ function copyFromJSON(object,resources) {
   if (Array.isArray(object)) {
     const result = [];
     for (let i = 0; i < object.length; i++) {
-      result.push(copyFromJSON(object[i],resources));
+      result.push(copyFromJSON(object[i], resources));
     }
     return result;
   }
@@ -56,15 +55,14 @@ function copyFromJSON(object,resources) {
   if (!object.moduleType) {
     const result = {};
     for (let key in object) {
-      result[key] = copyFromJSON(object[key],resources);
+      result[key] = copyFromJSON(object[key], resources);
     }
     return result;
   }
 
-  if(object.moduleType === "texture"){
+  if (object.moduleType === "texture") {
     return resources[object.params[0]];
   }
-
 
   // if we need to convert to object
   const C = THREE[object.moduleType] || Randomizers[object.moduleType];
@@ -336,11 +334,11 @@ class ParticlesSystem {
    * @return {ParticlesSystem} new ParticlesSystem created from the json-object
    * @memberof ParticlesSystem
    */
-  static fromJSON(options,resources = {}) {
+  static fromJSON(options, resources = {}) {
     const result = copyFromJSON(options, resources);
-    if(Array.isArray(result.system.emitters)){
-      result.system.emitters = result.system.emitters.map(v=>new Emitter(v));
-    }else{
+    if (Array.isArray(result.system.emitters)) {
+      result.system.emitters = result.system.emitters.map((v) => new Emitter(v));
+    } else {
       result.system.emitters = new Emitter(result.system.emitters);
     }
     return new ParticlesSystem(result);
