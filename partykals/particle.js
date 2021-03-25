@@ -72,6 +72,10 @@ class Particle {
 
     // starting offset
     this.position = getConstOrRandomVector(this.position, options.offset);
+    // if there is a bound object, we take its position as start
+    if (this.system.boundObject) {
+      this.position = this.position.add(this.system.boundObject.position);
+    }
 
     // set particle's ttl
     this.ttl = Utils.getRandomWithSpread(options.ttl || 1, options.ttlExtra) || 1;

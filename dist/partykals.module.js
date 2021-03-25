@@ -182,17 +182,7 @@ var utils={/**
    */getRandomWithSpread:function getRandomWithSpread(baseVal,extraRandom){if(!extraRandom){return baseVal;}return this.getRandomBetween(baseVal,baseVal+extraRandom);},/**
    * Get random between two colors.
    * If 'colMax' is not defined, will just return colMin or white color if not defined.
-   */getRandomColorBetween:function getRandomColorBetween(colMin,colMax,target){target=target||new THREE__default['default'].Color();if(!colMax){return colMin?target.copy(colMin):target.setRGB(0,0,0);}return target.setRGB(this.getRandomBetween(colMin.r,colMax.r),this.getRandomBetween(colMin.g,colMax.g),this.getRandomBetween(colMin.b,colMax.b));},// getRandomColorBetween: function (colMin, colMax) {
-//   if (!colMax) {
-//     return colMin ? colMin.clone() : new THREE.Color();
-//   }
-//   return new THREE.Color(
-//     this.getRandomBetween(colMin.r, colMax.r),
-//     this.getRandomBetween(colMin.g, colMax.g),
-//     this.getRandomBetween(colMin.b, colMax.b)
-//   );
-// },
-/**
+   */getRandomColorBetween:function getRandomColorBetween(colMin,colMax,target){target=target||new THREE__default['default'].Color();if(!colMax){return colMin?target.copy(colMin):target.setRGB(0,0,0);}return target.setRGB(this.getRandomBetween(colMin.r,colMax.r),this.getRandomBetween(colMin.g,colMax.g),this.getRandomBetween(colMin.b,colMax.b));},/**
    * Get random between two vectors.
    * If 'vecMax' is not defined, will just return vecMin or zero point if not defined.
    */getRandomVectorBetween:function getRandomVectorBetween(vecMin,vecMax,target){target=null;target=target||new THREE__default['default'].Vector3();if(!vecMax){return vecMin?target.copy(vecMin):target.set(0,0,0);}return target.set(this.getRandomBetween(vecMin.x,vecMax.x),this.getRandomBetween(vecMin.y,vecMax.y),this.getRandomBetween(vecMin.z,vecMax.z));},/**
@@ -234,7 +224,8 @@ this.age=0;this.finished=false;// store gravity force
 this.gravityX=options.gravityX;this.gravityY=options.gravityY||options.gravity;this.gravityZ=options.gravityZ;// particle's velocity and velocity bonus
 this.velocity=getConstOrRandomVector(this.velocity,options.velocity);if(options.velocityBonus){this.velocity.add(options.velocityBonus);}// particle's acceleration.
 this.acceleration=getConstOrRandomVector(this.acceleration,options.acceleration,true);// starting offset
-this.position=getConstOrRandomVector(this.position,options.offset);// set particle's ttl
+this.position=getConstOrRandomVector(this.position,options.offset);// if there is a bound object, we take its position as start
+if(this.system.boundObject){this.position=this.position.add(this.system.boundObject.position);}// set particle's ttl
 this.ttl=utils.getRandomWithSpread(options.ttl||1,options.ttlExtra)||1;// set per-particle alpha
 this.alpha=this.startAlpha=this.endAlpha=null;this.startAlphaChangeAt=(options.startAlphaChangeAt||0)/this.ttl;if(options.fade){// const alpha throughout particle's life?
 if(options.alpha!==undefined){this.alpha=utils.randomizerOrValue(options.alpha);}// shifting alpha?
@@ -562,7 +553,15 @@ deltaTime*=this.speed;// store last delta time
 this.dt=deltaTime;this.age+=deltaTime;// if we shall follow an object,
 // we just update the position on each frame,
 // to be the same, as the object
-if(this.boundObject){var pos=this.boundObject.position;this.particleSystem.position.set(pos.x,pos.y,pos.z);if(!this.lockBoundRotation){var rot=this.boundObject.rotation;this.particleSystem.rotation.set(rot.x,rot.y,rot.z);}}// to check if number of particles changed
+// if (this.boundObject) {
+//   const pos = this.boundObject.position;
+//   this.particleSystem.position.set(pos.x, pos.y, pos.z);
+//   if (!this.lockBoundRotation) {
+//     const rot = this.boundObject.rotation;
+//     this.particleSystem.rotation.set(rot.x, rot.y, rot.z);
+//   }
+// }
+// to check if number of particles changed
 var prevParticlesCount=this._aliveParticles.length;// generate particles (unless ttl expired)
 if(!this.ttlExpired){for(var i=0;i<this._emitters.length;++i){var toSpawn=this._emitters[i].update(deltaTime,this);if(toSpawn){this.spawnParticles(toSpawn);}}}// update particles
 for(var _i=this._aliveParticles.length-1;_i>=0;--_i){// update particle

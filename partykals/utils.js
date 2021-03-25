@@ -40,16 +40,6 @@ module.exports = {
       this.getRandomBetween(colMin.b, colMax.b)
     );
   },
-  // getRandomColorBetween: function (colMin, colMax) {
-  //   if (!colMax) {
-  //     return colMin ? colMin.clone() : new THREE.Color();
-  //   }
-  //   return new THREE.Color(
-  //     this.getRandomBetween(colMin.r, colMax.r),
-  //     this.getRandomBetween(colMin.g, colMax.g),
-  //     this.getRandomBetween(colMin.b, colMax.b)
-  //   );
-  // },
 
   /**
    * Get random between two vectors.
