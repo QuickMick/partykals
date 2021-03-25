@@ -590,14 +590,18 @@ class ParticlesSystem {
 
     // if finished, stop here
     if (this.finished) {
+      // TODO: remove options finish
       if (this.options.system.onFinish) this.options.system.onFinish(this);
+      if (this.onFinish) this.onFinish(this);
       return;
     }
 
     // call optional update
+    // TODO: remove options onUpdate
     if (this.options.system.onUpdate) {
       this.options.system.onUpdate(this);
     }
+    if (this.onUpdate) this.onUpdate(this);
   }
 
   /**

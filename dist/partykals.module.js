@@ -569,8 +569,10 @@ if(this._alphaDirty){this.particlesGeometry.attributes.alpha.needsUpdate=true;th
 if(this._sizeDirty){this.particlesGeometry.attributes.size.needsUpdate=true;this._sizeDirty=false;}// set rotation dirty flag
 if(this._rotateDirty){this.particlesGeometry.attributes.rotation.needsUpdate=true;this._rotateDirty=false;}// update bounding sphere
 if(this._needBoundingSphereUpdate){this._timeToUpdateBS-=deltaTime;if(this._timeToUpdateBS<=0){this._timeToUpdateBS=0.2;this.particlesGeometry.computeBoundingSphere();}}// if finished, stop here
-if(this.finished){if(this.options.system.onFinish)this.options.system.onFinish(this);return;}// call optional update
-if(this.options.system.onUpdate){this.options.system.onUpdate(this);}}/**
+if(this.finished){// TODO: remove options finish
+if(this.options.system.onFinish)this.options.system.onFinish(this);if(this.onFinish)this.onFinish(this);return;}// call optional update
+// TODO: remove options onUpdate
+if(this.options.system.onUpdate){this.options.system.onUpdate(this);}if(this.onUpdate)this.onUpdate(this);}/**
    * Spawn particles.
    * @param {Number} quantity Number of particles to spawn. If exceed max available particles in system, skip.
    */},{key:"spawnParticles",value:function spawnParticles(quantity){// spawn particles
