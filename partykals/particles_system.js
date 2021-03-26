@@ -148,6 +148,10 @@ class ParticlesSystem {
     // then particle system follows the passed object
     this.boundObject = null;
     this.lockBoundRotation = true;
+    // optional event-handler
+    this.onFinish = null;
+    // optional event-handler
+    this.onUpdate = null;
 
     // store options
     options.particles = options.particles || { worldPosition: true };
@@ -380,6 +384,14 @@ class ParticlesSystem {
     this.ttl = this.options.system.ttl;
     this.age = 0;
     this._timeToUpdateBS = 0;
+  }
+
+  /**
+   * sets the time to live to zero,
+   * so that the emitter does not spawn any new particles
+   */
+  gracefulStop() {
+    this.ttl = 0;
   }
 
   /**

@@ -480,7 +480,9 @@ var C=THREE__default['default'][object.moduleType]||randomizers[object.moduleTyp
    * @param {Boolean} options.system.depthTest Should we perform depth test? (default to true).
    */function ParticlesSystem(options){_classCallCheck(this,ParticlesSystem);// use bindObject, to set these values
 // then particle system follows the passed object
-this.boundObject=null;this.lockBoundRotation=true;// store options
+this.boundObject=null;this.lockBoundRotation=true;// optional event-handler
+this.onFinish=null;// optional event-handler
+this.onUpdate=null;// store options
 options.particles=options.particles||{worldPosition:true};options.system=options.system||{};this.options=options;// get particle options
 var pOptions=options.particles;// do some internal cheating to replace const size with global size
 if(typeof options.particles.size==="number"){console.warn("Note: replaced 'size' with 'globalSize' property since its more efficient and provided size value was constant anyway.");options.particles.globalSize=options.particles.size;delete options.particles.size;}// do some internal cheating to replace const color with global color
@@ -525,6 +527,9 @@ if(options.container){this.addTo(options.container);}}/**
    */},{key:"ttlExpired",get:function get(){return this.ttl!==undefined&&this.ttl<=0;}/**
    * Reset particles system ttl.
    */},{key:"reset",value:function reset(){this.ttl=this.options.system.ttl;this.age=0;this._timeToUpdateBS=0;}/**
+   * sets the time to live to zero,
+   * so that the emitter does not spawn any new particles
+   */},{key:"gracefulStop",value:function gracefulStop(){this.ttl=0;}/**
    * Get system's world position.
    */},{key:"getWorldPosition",value:function getWorldPosition(ret){ret=ret||new THREE__default['default'].Vector3();this.particleSystem.getWorldPosition(ret);return ret;}/**
    * Add the particles system to scene or container.
