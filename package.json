@@ -1,6 +1,6 @@
 {
   "name": "partykals",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Easy-to-use Particle Systems for THREE.js.",
   "main": "dist/partykals.js",
   "module": "partykals/index.js",
@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/RonenNess/partykals/",
   "peerDependencies": {
-    "three": "^0.124.0"
+    "three": "^0.127.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
