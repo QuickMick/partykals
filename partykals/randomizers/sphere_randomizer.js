@@ -50,7 +50,7 @@ class SphereRandomizer extends Randomizer {
 
     // apply scaler
     if (this.scaler) {
-      target.multiply(this.scaler);
+      target.multiplyScalar(this.scaler);
     }
     return target;
   }
