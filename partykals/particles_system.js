@@ -231,7 +231,7 @@ class ParticlesSystem {
     }
 
     // has transparency?
-    const isTransparent = blending !== "opaque";
+    const isTransparent = blending !== "opaque" || options.particles.isTransparent;
 
     // create the particle geometry
     this.particlesGeometry = new THREE.BufferGeometry();
@@ -555,6 +555,10 @@ class ParticlesSystem {
         this._aliveParticles.splice(i, 1);
         this._deadParticles.push(particle);
       }
+    }
+
+    if (this.particleSystem.sortParticles) {
+      // TODO sort particles
     }
 
     // hide invisible vertices
